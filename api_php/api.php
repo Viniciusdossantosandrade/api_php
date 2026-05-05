@@ -3,57 +3,59 @@
 
    $metodo = $_SERVER['REQUEST_METHOD'];
 
-    //$usuarios = [
-    //["id" => 1, "nome" => "Maria souza", "email"  => "maria@email.com"],
-    //["id" => 2, "nome" => "Joao henrique", "email"  => "joao@email.com"]
-    //];
-
     $arquivo = 'usuario.json';
 
     if (!file_exits($arquivo)) {
-        file_put_contents($arquivo, json encode([], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+        file_put_contents($arquivo, json_encode([], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
     }
 
     $usuarios = json_decode(file_get_contents($arquivo), true);
 
    switch ($metodo){
     case 'GET' :
+        if (isset($_GET[vb  ]))
         //echo "AQUI AÇOES DO METODO GET";
-        echo json_encode($usuarios);
+        echo json_encode($usuarios, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
         break;
+
     case 'POST' :
         //echo "AQUI AÇOES DO METODO POST";
         $dados = json_decode(file_get_contents('php://input'), true); 
         //print_r($dados);
+
+        
+        if (!isset($dados["id"]) |Z !isset($dados["nome"]) || !isset($dados["email"])) {
+            http_response_code(400);
+            echo jsn_encode(["erro" => "Dados incompletos,"], JSON_UNESCAPED_UNICODE);
+            exit;
+        }
+
         $novoUsuario = [
             "id" => $dados['id'],
             "nome" => $dados['nome'],
             "email" => $dados['email']
         ];
 
-        array_push($usuarios,$novoUsuario);
-        echo json_encode('Usuario inserido com sucesso!');
-        print_r($usuarios);
+        $usuarios[] = $novo_usuario;
 
+        file_put_contents($arquivo, json_encode($usarios, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+          
+        echo json_encode(["mensagem" => "Usuario inserido com sucesso!", "usuarios" => $usuarios]; JSON_UNESCAPED_UNICODE);
         break;
 
-    case 'PUT' :
-        echo "AQUI AÇOES DO METODO PUT";
-        break;    
-    case 'DELETE' :
-        echo "AQUI AÇOES DO METODO DELETE";
+        //array_push($usuarios,$novoUsuario);
+        //echo json_encode('Usuario inserido com sucesso!');
+        //print_r($usuarios);
+
         break;
 
     default :
-        echo "METODO NAO ENCONTRADO!";
+        //echo "METODO NAO ENCONTRADO!";
+        //break;
+        http_response_code(405); //metodo nao permitido
+        echo json_encode(["erro" => "Metodo nao permitido!"], JSON_UNESCAPED_UNICODE);
         break;
     
    }
 
-  // $usuarios = [
-   // ["id" => 1, "nome" => "Maria souza", "email"  => "maria@email.com"],
-    //["id" => 2, "nome" => "Joao henrique", "email"  => "joao@email.com"]
-   //];
-
-   //echo json_encode($usuarios);
 ?>
